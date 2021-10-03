@@ -17,6 +17,14 @@ export class Map {
         this.mapInfo = new Array(this.width + 1).fill('-').map(() => new Array(this.height + 1).fill('-'));
     }
 
+    getWidth() {
+        return this.width;
+    }
+    
+    getHeight() {
+        return this.height;
+    }
+
     getMapInfo() {
         return this.mapInfo;
     }
@@ -75,15 +83,14 @@ export class Map {
                 person.turnLeft();
                 break; }
             case 'A': {
-                person.advance();
-                this.updateMap();
+                const nextPosition = person.getNextMovePosition(this.width, this.height);
+                if(this.checkObstacle(nextPosition)) {
+                    person.advance();
+                    this.updateMap();
+                }
                 break;
             }
         }
-    }
-
-    checkObstacle(person) {
-
     }
 
     updateMap() {
@@ -100,10 +107,15 @@ export class Map {
     }
 
     injectItemIntoMap(item) {
-
         this.mapInfo[item.x][item.y] = item;
     }
     
+    checkObstacle(position) {
+        if (position && !isNaN(position.x) && !isNaN(position.y)) {
+            return this.mapInfo[position.x][position.y] === "-";
+        }
+        throw Error('Error parsing position'); 
+    }
 
 }
 

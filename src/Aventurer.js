@@ -8,6 +8,13 @@ export default class Aventurer extends Item {
         this.moves = moves;
     }
 
+    getPosition() {
+        return { 
+            x: this.x, 
+            y: this.y
+        };
+    }
+
     turnLeft() {
         switch (this.direction) {
             case 'N': this.direction = 'W'; break;
@@ -31,6 +38,33 @@ export default class Aventurer extends Item {
             case 'S': this.y = this.y + 1; break;
             case 'W': this.x = this.x > 1 ? this.x - 1 : 0; break;
             case 'E': this.x = this.x + 1; break;
+        }
+    }
+
+    getNextMovePosition(width, height) {
+        let newX = this.x; let newY = this.y;
+        switch(this.direction) {
+            case 'N': {
+                newY = this.y != 0 ? this.y - 1 : 0;
+                break;
+            }
+            case 'S': {
+                newY = this.y < height ? this.y + 1  : this.y;
+                break;
+            }
+            case 'W': {
+                newX = this.x != 0 ? this.x - 1 : 0;
+                break;
+            }
+            case 'E': {
+                newX = this.x < width ? this.x + 1 : this.x;
+                break;
+            }
+        }
+
+        return {
+            x: newX,
+            y: newY
         }
     }
 }

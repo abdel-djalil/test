@@ -145,4 +145,29 @@ test('Aventurer: move one step ', () => {
     map.moveOneStep('A', av);
     expect(av.x).toBe(0);
     expect(av.y).toBe(4);
+    map.moveOneStep('A', av);
+    expect(av.x).toBe(0);
+    expect(av.y).toBe(4);
+});
+
+test('Aventurer: getNextPosition ', () => {
+    map.populateMap("A-ADA-1-2-S-ADAAGA");
+    const av = map.getAventurerByName("ADA");
+    expect(av.getNextMovePosition(map.getWidth(), map.getHeight()).x).toBe(1);
+    expect(av.getNextMovePosition(map.getWidth(), map.getHeight()).y).toBe(3);
+    expect(av.getPosition().y).toBe(2);
+});
+
+test('Map: check Obstacle ', () => {
+    map.populateMap("A-ADA-1-2-S-ADAAGA");
+    map.populateMap("A-FIFO-0-4-E-ADAAGA");
+    map.populateMap("M-1-3");
+    const ada = map.getAventurerByName("ADA");
+    const fifo = map.getAventurerByName("FIFO");
+    map.moveOneStep('A', ada);
+    expect(ada.x).toBe(1);
+    expect(ada.y).toBe(2);
+    map.moveOneStep('A', fifo);
+    expect(fifo.x).toBe(1);
+    expect(fifo.y).toBe(4);
 });
