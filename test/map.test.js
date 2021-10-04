@@ -200,3 +200,4 @@ test('Aventurer: take treasure ', () => {
     expect(titi.getScore()).toBe(0);
     expect(treasure_1_3.remain).toBe(0);
 });
+
