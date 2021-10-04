@@ -13,7 +13,9 @@ class Map {
     }
 
     init() {
-        this.mapInfo = new Array(this.width + 1).fill('-').map(() => new Array(this.height + 1).fill('-'));
+        this.aventurers = [];
+        this.mountains = [];
+        this.treasures = [];
     }
 
     getWidth() {
@@ -24,31 +26,24 @@ class Map {
         return this.height;
     }
 
-    getMapInfo() {
-        return this.mapInfo;
-    }
-
     populateMap(item) {
         const [type] = item.split('-');
         switch(type) {
             case 'M' : {
                 const [type, x, y] = item.split('-');
                 const objectToInject = new Mountain(parseInt(x), parseInt(y), type); 
-                this.mapInfo[x][y] = objectToInject;
                 this.mountains.push(objectToInject);
                 break;
             }
             case 'T' : { 
                 const [type, x, y, remain] = item.split('-');
                 const objectToInject = new Treasure(parseInt(x), parseInt(y), type, remain); 
-                this.mapInfo[x][y] = objectToInject;
                 this.treasures.push(objectToInject);
                 break; 
             }
             case 'A' : { 
                 const [type, name, x, y, direction, moves] = item.split('-');
                 const objectToInject = new Aventurer(parseInt(x), parseInt(y), type, name, direction, moves);
-                this.mapInfo[x][y] = objectToInject;
                 this.aventurers.push(objectToInject);
                 break; 
             }
@@ -90,24 +85,10 @@ class Map {
                 const nextPosition = person.getNextMovePosition(this.width, this.height);
                 if(this.checkObstacle(nextPosition, person)) {
                     person.advance();
-                    this.updateMap();
                 }
                 break;
             }
         }
-    }
-
-    updateMap() {
-        this.init();
-        this.aventurers.forEach(v => {
-            this.injectItemIntoMap(v);
-        });
-        this.mountains.forEach(m => {
-            this.injectItemIntoMap(m);
-        });
-        this.treasures.forEach(t => {
-            this.injectItemIntoMap(t);
-        });
     }
 
     injectItemIntoMap(item) {

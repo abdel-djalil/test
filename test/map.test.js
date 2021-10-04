@@ -5,54 +5,36 @@ const map = new Map(5,5);
 const map2 = new Map(4, 6);
 
 
-beforeEach(() => {
-    map.init();
-    map2.init();
-});
-
 afterEach(() => {
     map.init();
-    map.aventurers = [];
-    map.mountains = [];
-    map.treasures = [];
     map2.init();
-    map2.aventurers = [];
-    map2.mountains = [];
-    map2.treasures = [];
 });
 
-
-test('init map ', () => {
-    expect(map2.getMapInfo()[0][0]).toBe('-');
-    expect(map2.getMapInfo()[1][2]).toBe('-');
-    expect(map2.getMapInfo()[2][2]).toBe('-');
-    expect(map2.getMapInfo()[1][9]).toBe(undefined);
-});
 
 test('populate map : add Mountain', () => {
     map.populateMap("M-1-1");
-    expect(map.getMapInfo()[1][1].type).toBe('M');
-    expect(map.getMapInfo()[1][1].x).toBe(1);
-    expect(map.getMapInfo()[1][1].y).toBe(1);
+    expect(map.mountains[0].type).toBe('M');
+    expect(map.mountains[0].x).toBe(1);
+    expect(map.mountains[0].y).toBe(1);
 });
 
 test('populate map : add Tresor', () => {
     map.populateMap("T-2-2-2");
-    expect(map.getMapInfo()[2][2].type).toBe('T');
-    expect(map.getMapInfo()[2][2].x).toBe(2);
-    expect(map.getMapInfo()[2][2].y).toBe(2);
-    expect(map.getMapInfo()[2][2].getRemain()).toBe(2);
+    expect(map.treasures[0].type).toBe('T');
+    expect(map.treasures[0].x).toBe(2);
+    expect(map.treasures[0].y).toBe(2);
+    expect(map.treasures[0].getRemain()).toBe(2);
 });
 
 
 test('populate map : add Adventurer', () => {
     map.populateMap("A-TITI-1-2-S-AADADA");
-    expect(map.getMapInfo()[1][2].type).toBe('A');
-    expect(map.getMapInfo()[1][2].name).toBe('TITI');
-    expect(map.getMapInfo()[1][2].getDirection()).toBe('S');
-    expect(map.getMapInfo()[1][2].moves).toBe('AADADA');
-    expect(map.getMapInfo()[1][2].x).toBe(1);
-    expect(map.getMapInfo()[1][2].y).toBe(2);
+    expect(map.aventurers[0].type).toBe('A');
+    expect(map.aventurers[0].name).toBe('TITI');
+    expect(map.aventurers[0].getDirection()).toBe('S');
+    expect(map.aventurers[0].moves).toBe('AADADA');
+    expect(map.aventurers[0].x).toBe(1);
+    expect(map.aventurers[0].y).toBe(2);
 });
 
 test('populate map : add non managed Item', () => {
