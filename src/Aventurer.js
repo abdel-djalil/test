@@ -6,6 +6,7 @@ export default class Aventurer extends Item {
         this.name = name;
         this.direction = direction;
         this.moves = moves;
+        this.score = 0;
     }
 
     getPosition() {
@@ -13,6 +14,10 @@ export default class Aventurer extends Item {
             x: this.x, 
             y: this.y
         };
+    }
+
+    getScore() {
+        return this.score;
     }
 
     turnLeft() {
@@ -66,5 +71,9 @@ export default class Aventurer extends Item {
             x: newX,
             y: newY
         }
+    }
+
+    takeTreasure() {
+        this.score++;
     }
 }

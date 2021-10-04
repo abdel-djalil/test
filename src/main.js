@@ -43,7 +43,7 @@ export class Map {
                 const [type, x, y, remain] = item.split('-');
                 const objectToInject = new Treasure(parseInt(x), parseInt(y), type, remain); 
                 this.mapInfo[x][y] = objectToInject;
-                this.aventurers.push(objectToInject);
+                this.treasures.push(objectToInject);
                 break; 
             }
             case 'A' : { 
@@ -74,6 +74,10 @@ export class Map {
         return this.aventurers.find(av => av.name === name);
     }
 
+    getTreasureByPosition({x, y}) {
+        return this.treasures.find(t => t.x === x && t.y === y);
+    }
+
     moveOneStep(step, person){    
         switch (step) {
             case 'D': {
@@ -84,7 +88,7 @@ export class Map {
                 break; }
             case 'A': {
                 const nextPosition = person.getNextMovePosition(this.width, this.height);
-                if(this.checkObstacle(nextPosition)) {
+                if(this.checkObstacle(nextPosition, person)) {
                     person.advance();
                     this.updateMap();
                 }
@@ -110,9 +114,18 @@ export class Map {
         this.mapInfo[item.x][item.y] = item;
     }
     
-    checkObstacle(position) {
+    checkObstacle(position, person) {
         if (position && !isNaN(position.x) && !isNaN(position.y)) {
-            return this.mapInfo[position.x][position.y] === "-";
+            const obstacles = [...this.aventurers, ...this.mountains];
+            const freeToMove = obstacles.find(ob => ob.x === position.x && ob.y === position.y) === undefined;
+            const treasureToPeek = this.treasures.find(t => t.x === position.x && t.y === position.y);
+            if (freeToMove && treasureToPeek) {
+                if (treasureToPeek.remain > 0) {
+                    treasureToPeek.reduce();
+                    person.takeTreasure();
+                }
+            }
+            return freeToMove;
         }
         throw Error('Error parsing position'); 
     }

@@ -159,8 +159,8 @@ test('Aventurer: getNextPosition ', () => {
 });
 
 test('Map: check Obstacle ', () => {
-    map.populateMap("A-ADA-1-2-S-ADAAGA");
-    map.populateMap("A-FIFO-0-4-E-ADAAGA");
+    map.populateMap("A-ADA-1-2-S-A");
+    map.populateMap("A-FIFO-0-4-E-A");
     map.populateMap("M-1-3");
     const ada = map.getAventurerByName("ADA");
     const fifo = map.getAventurerByName("FIFO");
@@ -170,4 +170,33 @@ test('Map: check Obstacle ', () => {
     map.moveOneStep('A', fifo);
     expect(fifo.x).toBe(1);
     expect(fifo.y).toBe(4);
+});
+
+test('Aventurer: take treasure ', () => {
+    map.populateMap("A-ADA-1-2-S-AA");
+    map.populateMap("A-TOTO-2-3-W-AA");
+    map.populateMap("A-TITI-0-3-E-A");
+    map.populateMap("T-1-3-2");
+    const ada = map.getAventurerByName("ADA");
+    const toto = map.getAventurerByName("TOTO");
+    const titi = map.getAventurerByName("TITI");
+    map.moveOneStep('A', ada);
+    const treasure_1_3 = map.getTreasureByPosition({x: 1, y:3});
+    expect(ada.x).toBe(1);
+    expect(ada.y).toBe(3);
+    expect(treasure_1_3.remain).toBe(1);
+    expect(ada.getScore()).toBe(1);
+    map.moveOneStep('A', ada);
+    map.moveOneStep('A', toto);
+    expect(toto.x).toBe(1);
+    expect(toto.y).toBe(3);
+    expect(treasure_1_3.remain).toBe(0);
+    expect(toto.getScore()).toBe(1);
+    map.moveOneStep('D', toto);
+    map.moveOneStep('A', toto);
+    map.moveOneStep('A', titi);
+    expect(titi.x).toBe(1);
+    expect(titi.y).toBe(3);
+    expect(titi.getScore()).toBe(0);
+    expect(treasure_1_3.remain).toBe(0);
 });
