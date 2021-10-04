@@ -1,7 +1,9 @@
-export default class Item {
+class Item {
     constructor(x, y, type) {
         this.x = parseInt(x);
         this.y = parseInt(y);
         this.type = type;
     }
 }
+
+module.exports = Item;

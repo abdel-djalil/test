@@ -1,12 +1,16 @@
-import Item from "./Item";
+var Item = require('./Item');
 
-export default class Aventurer extends Item {
+class Aventurer extends Item {
     constructor(x, y, type, name, direction, moves) {
         super(x, y, type);
         this.name = name;
         this.direction = direction;
         this.moves = moves;
         this.score = 0;
+    }
+    
+    getDirection() {
+        return this.direction;
     }
 
     getPosition() {
@@ -76,4 +80,10 @@ export default class Aventurer extends Item {
     takeTreasure() {
         this.score++;
     }
+
+    output() {
+        return `A-${this.name}-${this.x}-${this.y}-${this.direction}-${this.score}\n`;
+    }
 }
+
+module.exports = Aventurer;

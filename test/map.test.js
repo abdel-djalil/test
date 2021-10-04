@@ -1,5 +1,5 @@
-import { Map } from '../src/main';
-import Aventurer from '../src/Aventurer';
+var Map = require('../src/models/map');
+var Aventurer = require('../src/models/aventurer');
 
 const map = new Map(5,5);
 const map2 = new Map(4, 6);
@@ -41,7 +41,7 @@ test('populate map : add Tresor', () => {
     expect(map.getMapInfo()[2][2].type).toBe('T');
     expect(map.getMapInfo()[2][2].x).toBe(2);
     expect(map.getMapInfo()[2][2].y).toBe(2);
-    expect(map.getMapInfo()[2][2].remain).toBe(2);
+    expect(map.getMapInfo()[2][2].getRemain()).toBe(2);
 });
 
 
@@ -49,7 +49,7 @@ test('populate map : add Adventurer', () => {
     map.populateMap("A-TITI-1-2-S-AADADA");
     expect(map.getMapInfo()[1][2].type).toBe('A');
     expect(map.getMapInfo()[1][2].name).toBe('TITI');
-    expect(map.getMapInfo()[1][2].direction).toBe('S');
+    expect(map.getMapInfo()[1][2].getDirection()).toBe('S');
     expect(map.getMapInfo()[1][2].moves).toBe('AADADA');
     expect(map.getMapInfo()[1][2].x).toBe(1);
     expect(map.getMapInfo()[1][2].y).toBe(2);
@@ -69,13 +69,13 @@ test('Aventurer:  turn left', () => {
     const describe = "A-TOTO-1-2-N-ADAADA";
     const [type, name, x, y, direction, moves] = describe.split('-');
     const av = new Aventurer(parseInt(x), parseInt(y), type, name, direction, moves);
-    expect(av.direction).toBe('N');
+    expect(av.getDirection()).toBe('N');
     av.turnLeft()
-    expect(av.direction).toBe('W');
+    expect(av.getDirection()).toBe('W');
     av.turnLeft()
-    expect(av.direction).toBe('S');
+    expect(av.getDirection()).toBe('S');
     av.turnLeft()
-    expect(av.direction).toBe('E');
+    expect(av.getDirection()).toBe('E');
 });
 
 
@@ -83,13 +83,13 @@ test('Aventurer: turn right ', () => {
     const describe = "A-TOTO-1-2-N-ADAADA";
     const [type, name, x, y, direction, moves] = describe.split('-');
     const av = new Aventurer(parseInt(x), parseInt(y), type, name, direction, moves);
-    expect(av.direction).toBe('N');
+    expect(av.getDirection()).toBe('N');
     av.turnRight()
-    expect(av.direction).toBe('E');
+    expect(av.getDirection()).toBe('E');
     av.turnRight()
-    expect(av.direction).toBe('S');
+    expect(av.getDirection()).toBe('S');
     av.turnRight()
-    expect(av.direction).toBe('W');
+    expect(av.getDirection()).toBe('W');
 });
 
 
@@ -127,11 +127,11 @@ test('Aventurer: move one step ', () => {
     map.moveOneStep('A', av);
     expect(av.x).toBe(1);
     expect(av.y).toBe(3);
-    expect(av.direction).toBe('S');
+    expect(av.getDirection()).toBe('S');
     map.moveOneStep('D', av);
     expect(av.x).toBe(1);
     expect(av.y).toBe(3);
-    expect(av.direction).toBe('W');
+    expect(av.getDirection()).toBe('W');
     map.moveOneStep('A', av);
     expect(av.x).toBe(0);
     expect(av.y).toBe(3);
@@ -141,7 +141,7 @@ test('Aventurer: move one step ', () => {
     map.moveOneStep('G', av);
     expect(av.x).toBe(0);
     expect(av.y).toBe(3);
-    expect(av.direction).toBe('S');
+    expect(av.getDirection()).toBe('S');
     map.moveOneStep('A', av);
     expect(av.x).toBe(0);
     expect(av.y).toBe(4);
@@ -184,13 +184,13 @@ test('Aventurer: take treasure ', () => {
     const treasure_1_3 = map.getTreasureByPosition({x: 1, y:3});
     expect(ada.x).toBe(1);
     expect(ada.y).toBe(3);
-    expect(treasure_1_3.remain).toBe(1);
+    expect(treasure_1_3.getRemain()).toBe(1);
     expect(ada.getScore()).toBe(1);
     map.moveOneStep('A', ada);
     map.moveOneStep('A', toto);
     expect(toto.x).toBe(1);
     expect(toto.y).toBe(3);
-    expect(treasure_1_3.remain).toBe(0);
+    expect(treasure_1_3.getRemain()).toBe(0);
     expect(toto.getScore()).toBe(1);
     map.moveOneStep('D', toto);
     map.moveOneStep('A', toto);
@@ -198,6 +198,42 @@ test('Aventurer: take treasure ', () => {
     expect(titi.x).toBe(1);
     expect(titi.y).toBe(3);
     expect(titi.getScore()).toBe(0);
-    expect(treasure_1_3.remain).toBe(0);
+    expect(treasure_1_3.getRemain()).toBe(0);
 });
 
+
+test('Simulate : run ', () => {
+    map.populateMap("A-ADA-0-0-E-ADA");
+    map.populateMap("A-TOTO-4-4-W-AADAA");
+    map.run();
+    const ada = map.getAventurerByName("ADA");
+    const toto = map.getAventurerByName("TOTO");
+    expect(toto.x).toBe(2);
+    expect(toto.y).toBe(2);
+    expect(toto.getDirection()).toBe('N');
+    expect(toto.getScore()).toBe(0);
+    expect(ada.x).toBe(1);
+    expect(ada.y).toBe(1);
+    expect(ada.getDirection()).toBe('S');
+});
+
+test('Simulate : run and hunt', () => {
+    map.populateMap("A-ADA-0-0-E-ADAAAA");
+    map.populateMap("A-TOTO-4-4-W-AADAA");
+    map.populateMap("M-2-3");
+    map.populateMap("T-1-3-2");
+    const treasure_1_3 = map.getTreasureByPosition({x: 1, y: 3});
+    expect(treasure_1_3.getRemain()).toBe(2);
+    map.run();
+    const ada = map.getAventurerByName("ADA");
+    const toto = map.getAventurerByName("TOTO");
+    expect(ada.x).toBe(1);
+    expect(ada.y).toBe(4);
+    expect(ada.getDirection()).toBe('S');
+    expect(ada.getScore()).toBe(1);
+    expect(treasure_1_3.getRemain()).toBe(1);
+    expect(toto.x).toBe(2);
+    expect(toto.y).toBe(4);
+    expect(toto.getDirection()).toBe('N');
+    expect(toto.getScore()).toBe(0);
+});

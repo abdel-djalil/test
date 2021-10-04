@@ -1,138 +1,31 @@
-import Mountain from "./Mountain";
-import Treasure from "./Treasure";
-import Aventurer from "./Aventurer";
+var fs = require('fs');
+var Map = require('./models/map');
 
-
-export class Map { 
-    constructor(x, y) {
-        this.width = x - 1;
-        this.height = y - 1 ;
-        this.aventurers = [];
-        this.mountains = [];
-        this.treasures = [];
-        this.init();
-    }
-
-    init() {
-        this.mapInfo = new Array(this.width + 1).fill('-').map(() => new Array(this.height + 1).fill('-'));
-    }
-
-    getWidth() {
-        return this.width;
-    }
-    
-    getHeight() {
-        return this.height;
-    }
-
-    getMapInfo() {
-        return this.mapInfo;
-    }
-
-    populateMap(item) {
-        const [type] = item.split('-');
-        switch(type) {
-            case 'M' : {
-                const [type, x, y] = item.split('-');
-                const objectToInject = new Mountain(parseInt(x), parseInt(y), type); 
-                this.mapInfo[x][y] = objectToInject;
-                this.mountains.push(objectToInject);
-                break;
-            }
-            case 'T' : { 
-                const [type, x, y, remain] = item.split('-');
-                const objectToInject = new Treasure(parseInt(x), parseInt(y), type, remain); 
-                this.mapInfo[x][y] = objectToInject;
-                this.treasures.push(objectToInject);
-                break; 
-            }
-            case 'A' : { 
-                const [type, name, x, y, direction, moves] = item.split('-');
-                const objectToInject = new Aventurer(parseInt(x), parseInt(y), type, name, direction, moves);
-                this.mapInfo[x][y] = objectToInject;
-                this.aventurers.push(objectToInject);
-                break; 
-            }
-            case '#': {
-                console.log('line to ignore'); break;
-            }
-            default: {
-                throw Error('Error parsing item');
-            }
-        }
-    }
-
-    runAventurer(name) {
-        const aventurer = this.getAventurerByName(name);
-        const moves = aventurer.moves.split("");
-        moves.forEach(step => {
-            this.moveOneStep(step, aventurer);
-        });
-    }
-
-    getAventurerByName(name) {
-        return this.aventurers.find(av => av.name === name);
-    }
-
-    getTreasureByPosition({x, y}) {
-        return this.treasures.find(t => t.x === x && t.y === y);
-    }
-
-    moveOneStep(step, person){    
-        switch (step) {
-            case 'D': {
-                person.turnRight();
-                break; }
-            case 'G': {
-                person.turnLeft();
-                break; }
-            case 'A': {
-                const nextPosition = person.getNextMovePosition(this.width, this.height);
-                if(this.checkObstacle(nextPosition, person)) {
-                    person.advance();
-                    this.updateMap();
-                }
-                break;
-            }
-        }
-    }
-
-    updateMap() {
-        this.init();
-        this.aventurers.forEach(v => {
-            this.injectItemIntoMap(v);
-        });
-        this.mountains.forEach(m => {
-            this.injectItemIntoMap(m);
-        });
-        this.treasures.forEach(t => {
-            this.injectItemIntoMap(t);
-        });
-    }
-
-    injectItemIntoMap(item) {
-        this.mapInfo[item.x][item.y] = item;
-    }
-    
-    checkObstacle(position, person) {
-        if (position && !isNaN(position.x) && !isNaN(position.y)) {
-            const obstacles = [...this.aventurers, ...this.mountains];
-            const freeToMove = obstacles.find(ob => ob.x === position.x && ob.y === position.y) === undefined;
-            const treasureToPeek = this.treasures.find(t => t.x === position.x && t.y === position.y);
-            if (freeToMove && treasureToPeek) {
-                if (treasureToPeek.remain > 0) {
-                    treasureToPeek.reduce();
-                    person.takeTreasure();
-                }
-            }
-            return freeToMove;
-        }
-        throw Error('Error parsing position'); 
-    }
-
+// Make sure we got a filename on the command line.
+if (process.argv.length < 3) {
+    console.log('Usage: node ' + process.argv[1] + ' FILENAME');
+    process.exit(1);
 }
+let entries ;
+const filename = process.argv[2];
 
-
-
+fs.readFile(filename, 'utf8', function(err, data) {
+    if (err) throw err;
+    const entries = data.split("\n");
+    const mapDefinition = entries.find(entry => entry.length > 0 && entry[0] === "C").split("-");
+    const map = new Map(mapDefinition[1], mapDefinition[2])
+    const itemToInject = entries.filter(entry => entry.length > 0 && entry[0] != "C" && entry[0] != '#');
+    itemToInject.forEach(item => {
+        map.populateMap(item);
+    })
+    map.run();
+    let output = map.output();
+    
+    fs.writeFile("output/output.txt", output, function(err) {
+        if (err) {
+            return console.log(err);
+        }
+    })
+});
 
 
