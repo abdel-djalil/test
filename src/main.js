@@ -21,7 +21,7 @@ fs.readFile(filename, 'utf8', function(err, data) {
     map.run();
     let output = map.output();
     
-    fs.writeFile("output/output.txt", output, function(err) {
+    fs.writeFile("src/output/output.txt", output, function(err) {
         if (err) {
             return console.log(err);
         }
