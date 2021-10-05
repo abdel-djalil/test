@@ -13,7 +13,8 @@ lisible, et maintenable.
 `npm test`
 
 ## lancer le script
-`cd src` 
+
+npm start avec le fichier d'entrée en paramètre de type .txt
 
 `npm start {src/data-samples/entries.txt}` 
 
