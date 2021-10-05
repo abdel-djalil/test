@@ -15,6 +15,6 @@ lisible, et maintenable.
 ## lancer le script
 `cd src` 
 
-`node main.js {fichier-entrées.txt}` 
+`npm start {src/data-samples/entries.txt}` 
 
 Arpès le lancement du script un fichier de sortie (output.txt) sera généré dans le répertoire src/output
