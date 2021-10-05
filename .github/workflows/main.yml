@@ -35,4 +35,4 @@ jobs:
       - name: create output folder
         run: mkdir src/output
       - name: run program with sample data
-        run: npm start src/data-sample/entries.txt
+        run: npm start src/data-samples/entries.txt
